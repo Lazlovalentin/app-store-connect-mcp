@@ -114,8 +114,8 @@ describe('the registry itself', () => {
   it('emits a paste block that parses back to a runnable entry', () => {
     const doc = JSON.parse(manualBlock(CLIENTS[0], ['distribution:version']));
     expect(doc.mcpServers['asc-distribution']).toEqual({
-      command: 'npx',
-      args: ['-y', '@erayendes/asc-mcp', 'distribution:version'],
+      command: 'asc-mcp',
+      args: ['distribution:version'],
     });
   });
 });

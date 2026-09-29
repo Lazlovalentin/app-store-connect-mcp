@@ -1,0 +1,94 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+      - run: npm ci
+      - run: npm run generate
+      - run: git diff --exit-code src/generated/ plugins/
+      - run: npm run build
+      - run: npm test
+      - run: npm run mcpb
+
+      - name: Pack
+        run: |
+          set -euo pipefail
+          VERSION="$(node -p "require('./package.json').version")"
+          mkdir out
+          TARBALL="$(npm pack ./dist-mcpb/bundle --pack-destination out --silent)"
+          mv "out/${TARBALL}" "out/asc-mcp-${GITHUB_REF_NAME}.tgz"
+          cp "dist-mcpb/heimdall-asc-${VERSION}.mcpb" "out/heimdall-asc-${GITHUB_REF_NAME}.mcpb"
+          cd out && sha256sum -- * > SHA256SUMS
+
+      - name: Smoke test the installed tarball
+        run: |
+          set -euo pipefail
+          npm install -g --prefix /tmp/asc "out/asc-mcp-${GITHUB_REF_NAME}.tgz"
+          export PATH="/tmp/asc/bin:$PATH"
+          asc-mcp --version
+          node -e "
+          const { generateKeyPairSync } = require('crypto');
+          const { privateKey } = generateKeyPairSync('ec', {
+            namedCurve: 'P-256',
+            privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
+            publicKeyEncoding: { type: 'spki', format: 'pem' },
+          });
+          require('fs').writeFileSync('/tmp/smoke.p8', privateKey);
+          "
+          ASC_KEY_ID=CI0000000 \
+          ASC_ISSUER_ID=00000000-0000-0000-0000-000000000000 \
+          ASC_PRIVATE_KEY_PATH=/tmp/smoke.p8 \
+          node -e "
+          const { spawn } = require('child_process');
+          const p = spawn('asc-mcp', ['distribution'], { env: process.env });
+          let out = '';
+          p.stdout.on('data', d => out += d);
+          p.stdin.write(JSON.stringify({jsonrpc:'2.0',id:1,method:'initialize',params:{protocolVersion:'2024-11-05',capabilities:{},clientInfo:{name:'ci',version:'1'}}}) + '\n');
+          setTimeout(() => {
+            p.stdin.write(JSON.stringify({jsonrpc:'2.0',method:'notifications/initialized'}) + '\n');
+            p.stdin.write(JSON.stringify({jsonrpc:'2.0',id:2,method:'tools/list'}) + '\n');
+          }, 500);
+          setTimeout(() => {
+            p.kill();
+            const listed = out.split('\n').filter(Boolean).map(l => { try { return JSON.parse(l); } catch { return null; } }).find(r => r && r.id === 2);
+            const count = listed?.result?.tools?.length ?? 0;
+            console.log('Tools listed:', count);
+            process.exit(count > 10 ? 0 : 1);
+          }, 2500);
+          "
+
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: |
+            out/*.tgz
+            out/*.mcpb
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          sed "s/{{TAG}}/${GITHUB_REF_NAME}/g; s|{{REPO}}|${GITHUB_REPOSITORY}|g" .github/release-notes.md > "${RUNNER_TEMP}/notes.md"
+          gh release create "${GITHUB_REF_NAME}" out/* \
+            --repo "${GITHUB_REPOSITORY}" \
+            --title "${GITHUB_REF_NAME}" \
+            --notes-file "${RUNNER_TEMP}/notes.md"

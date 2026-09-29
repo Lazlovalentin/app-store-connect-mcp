@@ -21,7 +21,7 @@ const config = readFileSync('src/core/config.ts', 'utf8');
 describe('the MCPB manifest describes this server', () => {
   it('launches the bundled entry point rather than reaching for npx', () => {
     // The whole point of a bundle is that it runs on a machine with no Node
-    // toolchain and no npm. `npx -y @erayendes/asc-mcp` here would work on the
+    // toolchain and no npm. `asc-mcp` here would work on the
     // author's machine and nowhere else.
     expect(manifest.server.mcp_config.command).toBe('node');
     expect(manifest.server.mcp_config.args[0]).toContain('${__dirname}');

@@ -22,9 +22,9 @@ import { accessSync, constants, copyFileSync, existsSync, mkdirSync, readFileSyn
 import { delimiter, dirname, join } from 'node:path';
 import { homedir } from 'node:os';
 
-/** `npx` rather than an absolute path: portable, and survives a reinstall. */
-export const SERVER_COMMAND = 'npx';
-export const serverArgs = (spec: string): string[] => ['-y', '@erayendes/asc-mcp', spec];
+/** The `asc-mcp` binary from the fork's release tarball, never npx: npx would fetch upstream from npm. */
+export const SERVER_COMMAND = 'asc-mcp';
+export const serverArgs = (spec: string): string[] => [spec];
 /** `monetization:iap,storekit` registers as `asc-monetization`. */
 export const serverName = (spec: string): string => `asc-${spec.split(':', 1)[0]}`;
 

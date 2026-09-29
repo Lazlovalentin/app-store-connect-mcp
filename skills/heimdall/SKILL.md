@@ -81,7 +81,7 @@ user did not open, usually more than the one you are talking through, and the
 command has no prompt of its own:
 
 ```bash
-npx -y @erayendes/asc-mcp register monetization:subscription-pricing analytics
+asc-mcp register monetization:subscription-pricing analytics
 ```
 
 `register` only adds; re-running it changes nothing. `--clients=claude,codex`
@@ -91,7 +91,7 @@ limits which configs it touches (ids: `claude`, `codex`, `antigravity`,
 **2. Send the user to `setup`.**
 
 ```bash
-npx -y @erayendes/asc-mcp setup
+asc-mcp setup
 ```
 
 **Never run this yourself, and never ask for the `.p8`.** It is an App Store
