@@ -66,7 +66,7 @@ cpSync('skills', join(OUT, 'skills'), { recursive: true });
 // devDependencies and scripts in front of anyone who opens the bundle.
 writeFileSync(
   join(OUT, 'package.json'),
-  `${JSON.stringify({ name: pkg.name, version: pkg.version, type: pkg.type, license: pkg.license }, null, 2)}\n`
+  `${JSON.stringify({ name: pkg.name, version: pkg.version, type: pkg.type, license: pkg.license, bin: { 'asc-mcp': 'server/index.js' } }, null, 2)}\n`
 );
 writeFileSync(join(OUT, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
 
