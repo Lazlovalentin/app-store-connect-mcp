@@ -3,13 +3,21 @@
 ## 1. Завантажити й перевірити
 
 ```bash
-gh release download {{TAG}} -R {{REPO}} -D asc-mcp-{{TAG}} && cd asc-mcp-{{TAG}}
+V={{TAG}}
+B=https://github.com/{{REPO}}/releases/download/$V
+mkdir asc-mcp-$V && cd asc-mcp-$V
+curl -fsSL --remote-name-all $B/asc-mcp-$V.tgz $B/heimdall-asc-$V.mcpb $B/SHA256SUMS
 shasum -a 256 -c SHA256SUMS
-gh attestation verify asc-mcp-{{TAG}}.tgz -R {{REPO}}
-gh attestation verify heimdall-asc-{{TAG}}.mcpb -R {{REPO}}
 ```
 
-Якщо хоч одна перевірка впала — не встановлювати.
+Обидва рядки мають закінчитись на `OK`, інакше не встановлювати.
+
+Якщо встановлено `gh`, можна ще перевірити, що файли зібрав CI саме з цього тегу:
+
+```bash
+gh attestation verify asc-mcp-$V.tgz -R {{REPO}}
+gh attestation verify heimdall-asc-$V.mcpb -R {{REPO}}
+```
 
 ## 2a. Claude Code
 
