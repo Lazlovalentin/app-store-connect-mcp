@@ -42,7 +42,7 @@ jobs:
       - name: Smoke test the installed tarball
         run: |
           set -euo pipefail
-          npm install -g --prefix /tmp/asc "out/asc-mcp-${GITHUB_REF_NAME}.tgz"
+          npm install -g --prefix /tmp/asc "./out/asc-mcp-${GITHUB_REF_NAME}.tgz"
           export PATH="/tmp/asc/bin:$PATH"
           asc-mcp --version
           node -e "
