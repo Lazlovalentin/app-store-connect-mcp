@@ -33,7 +33,7 @@ try {
 } catch (err) {
   console.log(
     `\nax:eval needs App Store Connect credentials — skipped.\n` +
-      `Run \`npx @erayendes/asc-mcp setup\`, or set ASC_KEY_ID / ASC_ISSUER_ID / ASC_PRIVATE_KEY_*.\n` +
+      `Run \`asc-mcp setup\`, or set ASC_KEY_ID / ASC_ISSUER_ID / ASC_PRIVATE_KEY_*.\n` +
       dim(`(${err instanceof Error ? err.message : String(err)})\n`)
   );
   process.exit(0);

@@ -181,7 +181,7 @@ describe('removed profiles', () => {
     const message = removedProfileMessage('user-management')!;
     expect(message).toContain('access');
     expect(message).toContain('testflight');
-    expect(message).toContain('npx -y @erayendes/asc-mcp access');
+    expect(message).toContain('asc-mcp access');
     expect(removedProfileMessage('monetization')).toBeUndefined();
   });
 

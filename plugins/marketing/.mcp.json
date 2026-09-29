@@ -1,10 +1,8 @@
 {
   "mcpServers": {
     "asc-marketing": {
-      "command": "npx",
+      "command": "asc-mcp",
       "args": [
-        "-y",
-        "@erayendes/asc-mcp",
         "marketing"
       ]
     }

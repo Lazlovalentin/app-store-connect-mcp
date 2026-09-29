@@ -283,7 +283,7 @@ export function subProfileOwning(profile: Profile, operation: string): SubProfil
 /** The exact command that registers a profile's server — a copy-paste remedy. */
 export function registerCommand(spec: string): string {
   const name = spec.split(':', 1)[0];
-  return `claude mcp add -s user asc-${name} -- npx -y @erayendes/asc-mcp ${spec}`;
+  return `claude mcp add -s user asc-${name} -- asc-mcp ${spec}`;
 }
 
 /**

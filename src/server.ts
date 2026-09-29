@@ -734,7 +734,7 @@ export function createServer(config: ServerConfig, selection?: ProfileSelection)
                   lines.push(
                     `The rest live on sibling MCP servers. Register the ones you need — ` +
                       `the command is the same everywhere:\n` +
-                      homes.map((n) => `  asc-${n}  ->  npx -y @erayendes/asc-mcp ${n}`).join('\n') +
+                      homes.map((n) => `  asc-${n}  ->  asc-mcp ${n}`).join('\n') +
                       `\nFor example, in Claude Code:\n` +
                       homes.map((n) => `  ${registerCommand(n)}`).join('\n') +
                       `\nOn other clients (Codex, Antigravity, Claude Desktop, …) add the same ` +
